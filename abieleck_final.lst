@@ -1,0 +1,701 @@
+SQL> 
+SQL> -- ******************************************************
+SQL> --    DROP TABLES AND VIEWS
+SQL> -- Note:  Issue the appropiate commands to drop tables
+SQL> -- ******************************************************
+SQL> 
+SQL> DROP table tbPrimary purge;
+
+Table dropped.
+
+SQL> DROP table tbEmergency purge;
+
+Table dropped.
+
+SQL> DROP table tbPlayerAssignment purge;
+
+Table dropped.
+
+SQL> DROP table tbGameRole purge;
+
+Table dropped.
+
+SQL> DROP table tbGame purge;
+
+Table dropped.
+
+SQL> DROP table tbCoachRole purge;
+
+Table dropped.
+
+SQL> DROP table tbDonation purge;
+DROP table tbDonation purge
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+SQL> DROP table tbCori purge;
+
+Table dropped.
+
+SQL> DROP table tbLocation purge;
+
+Table dropped.
+
+SQL> DROP table tbTeam purge;
+
+Table dropped.
+
+SQL> DROP table tbAdult purge;
+
+Table dropped.
+
+SQL> DROP table tbPlayer purge;
+
+Table dropped.
+
+SQL> 
+SQL> -- ******************************************************
+SQL> --    CREATE TABLES
+SQL> -- ******************************************************
+SQL> 
+SQL> CREATE table tbPlayer (
+  2    playerid NUMBER GENERATED AS IDENTITY,
+  3    lastName      varchar2(35)	 not null,
+  4    firstName     varchar2(35)	 not null,
+  5    dob	     date		 not null,
+  6    sex	     char(1)		 not null,
+  7    CONSTRAINT pk_player PRIMARY KEY (playerid)
+  8  );
+
+Table created.
+
+SQL> 
+SQL> CREATE table tbAdult (
+  2    adultid NUMBER GENERATED AS IDENTITY,
+  3    lastName      varchar2(35)	 not null,
+  4    firstName     varchar2(35)	 not null,
+  5    address	     varchar2(255)	 null,
+  6    phone	     varchar2(20)	 not null,
+  7    email	     varchar2(255)	 null,
+  8    CONSTRAINT pk_adult PRIMARY KEY (adultid)
+  9  );
+
+Table created.
+
+SQL> 
+SQL> CREATE table tbTeam (
+  2    teamid NUMBER GENERATED AS IDENTITY,
+  3    teamName      varchar2(35)	 not null,
+  4    division      varchar2(10)	 not null,
+  5    status	     varchar2(10)	 not null,
+  6    CONSTRAINT pk_team PRIMARY KEY (teamid)
+  7  );
+
+Table created.
+
+SQL> 
+SQL> CREATE table tbLocation (
+  2    locationid NUMBER GENERATED AS IDENTITY,
+  3    fieldName     varchar2(35)	 not null,
+  4    address	     varchar2(255)	 not null,
+  5    CONSTRAINT pk_location PRIMARY KEY (locationid)
+  6  );
+
+Table created.
+
+SQL> 
+SQL> CREATE table tbCori (
+  2    corinum NUMBER GENERATED AS IDENTITY,
+  3    adultid	     number		 not null,
+  4    year	     number(4,0)	 not null,
+  5    constraint pk_cori PRIMARY KEY (corinum),
+  6    CONSTRAINT fk_cori_adultid FOREIGN KEY (adultid)
+  7  	 REFERENCES tbAdult(adultid)
+  8  );
+
+Table created.
+
+SQL> 
+SQL> CREATE table tbCoachRole (
+  2    roleid NUMBER GENERATED AS IDENTITY,
+  3    adultid	     number		 not null,
+  4    teamid	     number		 not null,
+  5    role	     varchar2(20)	 not null,
+  6    year	     number(4,0)	 not null,
+  7    constraint pk_role PRIMARY KEY (roleid),
+  8    constraint fk_role_adultid FOREIGN KEY (adultid) REFERENCES tbAdult(adultid),
+  9    constraint fk_role_teamid FOREIGN KEY (teamid) REFERENCES tbTeam(teamid)
+ 10  );
+
+Table created.
+
+SQL> 
+SQL> CREATE table tbGame (
+  2    gameid NUMBER GENERATED AS IDENTITY,
+  3    locationid    number		 not null,
+  4    gameDate      date		 not null,
+  5    gameTime      varchar2(10)	 not null,
+  6    constraint pk_game PRIMARY KEY (gameid),
+  7    constraint fk_game_field FOREIGN KEY (locationid) REFERENCES tbLocation(locationid)
+  8  );
+
+Table created.
+
+SQL> 
+SQL> CREATE table tbGameRole (
+  2    gameid	     number		 not null,
+  3    role	     varchar2(4)	 not null,
+  4    teamid	     number		 not null,
+  5    runs	     number(2,0)	 null,
+  6    constraint pk_gamerole PRIMARY KEY (gameid, role),
+  7    constraint fk_gamerole_gameid FOREIGN KEY (gameid) REFERENCES tbGame(gameid),
+  8    constraint fk_gamerole_team FOREIGN KEY (teamid) REFERENCES tbTeam(teamid)
+  9  );
+
+Table created.
+
+SQL> 
+SQL> 
+SQL> -- Allowing null on teamid to also use this as registration
+SQL> CREATE table tbPlayerAssignment (
+  2    assignid NUMBER GENERATED AS IDENTITY,
+  3    playerid      number		 not null,
+  4    teamid	     number		 null,
+  5    year	     number(4,0)	 not null,
+  6    constraint pk_assignment PRIMARY KEY (assignid),
+  7    constraint fk_assignment_player FOREIGN KEY (playerid)
+  8  	 REFERENCES tbPlayer(playerid),
+  9    constraint fk_assignment_team FOREIGN KEY (teamid) REFERENCES tbTeam(teamid)
+ 10  );
+
+Table created.
+
+SQL> 
+SQL> CREATE table tbPrimary (
+  2    adultid	     number		 not null,
+  3    playerid      number		 not null,
+  4    relationship  varchar2(25)	 not null,
+  5    constraint pk_primary PRIMARY KEY (adultid, playerid),
+  6    constraint fk_primary_adultid FOREIGN KEY (adultid) REFERENCES tbAdult(adultid),
+  7    constraint fk_primary_playerid FOREIGN KEY (playerid) REFERENCES tbPlayer(playerid)
+  8  );
+
+Table created.
+
+SQL> 
+SQL> CREATE table tbEmergency (
+  2    playerid      number		 not null,
+  3    adultid	     number		 not null,
+  4    constraint pk_emergency PRIMARY KEY (playerid, adultid),
+  5    constraint fk_emergency_adultid FOREIGN KEY (adultid) REFERENCES tbAdult(adultid),
+  6    constraint fk_emergency_playerid FOREIGN KEY (playerid) REFERENCES tbPlayer(playerid)
+  7  );
+
+Table created.
+
+SQL> 
+SQL> INSERT INTO tbPlayer (lastName, firstName, dob, sex)
+  2    VALUES ('Bielecki', 'Nathan', to_date('02-16-2011','mm-dd-yyyy'), 'M');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbPlayer (lastName, firstName, dob, sex)
+  2    VALUES ('Santillo', 'Isaac', to_date('11-15-2010','mm-dd-yyyy'), 'M');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbPlayer (lastName, firstName, dob, sex)
+  2    VALUES ('Smith', 'Carter', to_date('10-31-2010','mm-dd-yyyy'), 'M');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbPlayer (lastName, firstName, dob, sex)
+  2    VALUES ('Carew', 'Hendrick', to_date('02-16-2010','mm-dd-yyyy'), 'M');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbAdult (lastName, firstName, address, phone, email)
+  2    VALUES ('Bielecki', 'Andrew', '5 Island Hill Ave, Malden, MA 02148', '555-555-5555', 'a@b.c');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbAdult (lastName, firstName, address, phone, email)
+  2    VALUES ('Santillo', 'Chris', '5 Underhill, Malden, MA 02148', '555-555-5556', 'b@b.c');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbAdult (lastName, firstName, address, phone, email)
+  2    VALUES ('Bielecki', 'Gillian', '5 Island Hill Ave, Malden, MA 02148', '555-555-5557', 'c@b.c');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbAdult (lastName, firstName, address, phone, email)
+  2    VALUES ('Smith', 'Michael', '5 OverHill Ave, Malden, MA 02148', '555-555-5558', 'd@b.c');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbAdult (lastName, firstName, address, phone, email)
+  2    VALUES ('Carew', 'Dan', '5 PasttheHill Ave, Malden, MA 02148', '555-555-5559', 'e@b.c');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbTeam (teamName, division, status)
+  2    VALUES ('SeaDogs', 'Tball', 'active');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbTeam (teamName, division, status)
+  2    VALUES ('MuckDogs', 'Tball', 'active');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbTeam (teamName, division, status)
+  2    VALUES ('IronPigs', 'Tball', 'active');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbTeam (teamName, division, status)
+  2    VALUES ('Mudhens', 'Tball', 'active');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbTeam (teamName, division, status)
+  2    VALUES ('Knights', 'Tball', 'inactive');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbLocation (fieldName, address)
+  2    VALUES ('Trafton Field', 'Trafton Ave, Malden, MA');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbLocation (fieldName, address)
+  2    VALUES ('Bruce Field', 'Bruce Ave, Malden, MA');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbLocation (fieldName, address)
+  2    VALUES ('Linden Field', 'Linden Ave, Malden, MA');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbLocation (fieldName, address)
+  2    VALUES ('Kierstead Field', 'Kierstead Ave, Malden, MA');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbCori (adultid, year)
+  2    VALUES (1, '2015');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbCori (adultid, year)
+  2    VALUES (2, '2015');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbCori (adultid, year)
+  2    VALUES (3, '2015');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbCori (adultid, year)
+  2    VALUES (4, '2015');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbCori (adultid, year)
+  2    VALUES (5, '2015');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbCori (adultid, year)
+  2    VALUES (1, '2016');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbCori (adultid, year)
+  2    VALUES (2, '2016');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbCori (adultid, year)
+  2    VALUES (3, '2016');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbCoachRole (adultid, teamid, role, year)
+  2    VALUES (1, 1, 'manager', '2016');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbCoachRole (adultid, teamid, role, year)
+  2    VALUES (2, 1, 'assistant', '2016');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbCoachRole (adultid, teamid, role, year)
+  2    VALUES (3, 4, 'manager', '2015');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbGame (locationid, gameDate, gameTime)
+  2    VALUES (1, to_date('04-16-2015','mm-dd-yyyy'), '7PM');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbGame (locationid, gameDate, gameTime)
+  2    VALUES (2, to_date('04-16-2015','mm-dd-yyyy'), '7PM');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbGame (locationid, gameDate, gameTime)
+  2    VALUES (3, to_date('04-18-2015','mm-dd-yyyy'), '7PM');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbGameRole (gameid, role, teamid, runs)
+  2    VALUES (1, 'home', 1, 7);
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbGameRole (gameid, role, teamid, runs)
+  2    VALUES (1, 'away', 2, 4);
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbGameRole (gameid, role, teamid)
+  2    VALUES (2, 'home', 3);
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbGameRole (gameid, role, teamid)
+  2    VALUES (2, 'away', 4);
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbPlayerAssignment (playerid, teamid, year)
+  2    VALUES (1, 1, '2015');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbPlayerAssignment (playerid, teamid, year)
+  2    VALUES (2, 1, '2015');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbPlayerAssignment (playerid, teamid, year)
+  2    VALUES (3, 1, '2015');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbPlayerAssignment (playerid, teamid, year)
+  2    VALUES (4, 1, '2015');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbPlayerAssignment (playerid, year)
+  2    VALUES (1, '2016');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbPlayerAssignment (playerid, year)
+  2    VALUES (2, '2016');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbPrimary (adultid, playerid, relationship)
+  2    VALUES (1,1,'father');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbPrimary (adultid, playerid, relationship)
+  2    VALUES (2,2,'father');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO tbEmergency (adultid, playerid)
+  2    VALUES (3,1);
+
+1 row created.
+
+SQL> 
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> -- ******************************************************
+SQL> --    VIEW TABLES
+SQL> -- ******************************************************
+SQL> 
+SQL> SELECT * from tbPlayer;
+
+  PLAYERID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                           DOB       S                                 
+----------------------------------- --------- -                                 
+         1 Bielecki                                                             
+Nathan                              16-FEB-11 M                                 
+                                                                                
+         2 Santillo                                                             
+Isaac                               15-NOV-10 M                                 
+                                                                                
+         3 Smith                                                                
+Carter                              31-OCT-10 M                                 
+                                                                                
+
+  PLAYERID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                           DOB       S                                 
+----------------------------------- --------- -                                 
+         4 Carew                                                                
+Hendrick                            16-FEB-10 M                                 
+                                                                                
+
+SQL> SELECT * from tbAdult;
+
+   ADULTID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                                                                       
+-----------------------------------                                             
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+PHONE                                                                           
+--------------------                                                            
+EMAIL                                                                           
+--------------------------------------------------------------------------------
+         1 Bielecki                                                             
+Andrew                                                                          
+5 Island Hill Ave, Malden, MA 02148                                             
+
+   ADULTID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                                                                       
+-----------------------------------                                             
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+PHONE                                                                           
+--------------------                                                            
+EMAIL                                                                           
+--------------------------------------------------------------------------------
+555-555-5555                                                                    
+a@b.c                                                                           
+                                                                                
+
+   ADULTID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                                                                       
+-----------------------------------                                             
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+PHONE                                                                           
+--------------------                                                            
+EMAIL                                                                           
+--------------------------------------------------------------------------------
+         2 Santillo                                                             
+Chris                                                                           
+5 Underhill, Malden, MA 02148                                                   
+
+   ADULTID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                                                                       
+-----------------------------------                                             
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+PHONE                                                                           
+--------------------                                                            
+EMAIL                                                                           
+--------------------------------------------------------------------------------
+555-555-5556                                                                    
+b@b.c                                                                           
+                                                                                
+
+   ADULTID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                                                                       
+-----------------------------------                                             
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+PHONE                                                                           
+--------------------                                                            
+EMAIL                                                                           
+--------------------------------------------------------------------------------
+         3 Bielecki                                                             
+Gillian                                                                         
+5 Island Hill Ave, Malden, MA 02148                                             
+
+   ADULTID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                                                                       
+-----------------------------------                                             
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+PHONE                                                                           
+--------------------                                                            
+EMAIL                                                                           
+--------------------------------------------------------------------------------
+555-555-5557                                                                    
+c@b.c                                                                           
+                                                                                
+
+   ADULTID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                                                                       
+-----------------------------------                                             
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+PHONE                                                                           
+--------------------                                                            
+EMAIL                                                                           
+--------------------------------------------------------------------------------
+         4 Smith                                                                
+Michael                                                                         
+5 OverHill Ave, Malden, MA 02148                                                
+
+   ADULTID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                                                                       
+-----------------------------------                                             
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+PHONE                                                                           
+--------------------                                                            
+EMAIL                                                                           
+--------------------------------------------------------------------------------
+555-555-5558                                                                    
+d@b.c                                                                           
+                                                                                
+
+   ADULTID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                                                                       
+-----------------------------------                                             
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+PHONE                                                                           
+--------------------                                                            
+EMAIL                                                                           
+--------------------------------------------------------------------------------
+         5 Carew                                                                
+Dan                                                                             
+5 PasttheHill Ave, Malden, MA 02148                                             
+
+   ADULTID LASTNAME                                                             
+---------- -----------------------------------                                  
+FIRSTNAME                                                                       
+-----------------------------------                                             
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+PHONE                                                                           
+--------------------                                                            
+EMAIL                                                                           
+--------------------------------------------------------------------------------
+555-555-5559                                                                    
+e@b.c                                                                           
+                                                                                
+
+SQL> SELECT * from tbTeam;
+
+    TEAMID TEAMNAME                            DIVISION   STATUS                
+---------- ----------------------------------- ---------- ----------            
+         1 SeaDogs                             Tball      active                
+         2 MuckDogs                            Tball      active                
+         3 IronPigs                            Tball      active                
+         4 Mudhens                             Tball      active                
+         5 Knights                             Tball      inactive              
+
+SQL> SELECT * from tbLocation;
+
+LOCATIONID FIELDNAME                                                            
+---------- -----------------------------------                                  
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+         1 Trafton Field                                                        
+Trafton Ave, Malden, MA                                                         
+                                                                                
+         2 Bruce Field                                                          
+Bruce Ave, Malden, MA                                                           
+                                                                                
+         3 Linden Field                                                         
+Linden Ave, Malden, MA                                                          
+                                                                                
+
+LOCATIONID FIELDNAME                                                            
+---------- -----------------------------------                                  
+ADDRESS                                                                         
+--------------------------------------------------------------------------------
+         4 Kierstead Field                                                      
+Kierstead Ave, Malden, MA                                                       
+                                                                                
+
+SQL> SELECT * from tbCori;
+
+   CORINUM    ADULTID       YEAR                                                
+---------- ---------- ----------                                                
+         1          1       2015                                                
+         2          2       2015                                                
+         3          3       2015                                                
+         4          4       2015                                                
+         5          5       2015                                                
+         6          1       2016                                                
+         7          2       2016                                                
+         8          3       2016                                                
+
+8 rows selected.
+
+SQL> SELECT * from tbCoachRole;
+
+    ROLEID    ADULTID     TEAMID ROLE                       YEAR                
+---------- ---------- ---------- -------------------- ----------                
+         1          1          1 manager                    2016                
+         2          2          1 assistant                  2016                
+         3          3          4 manager                    2015                
+
+SQL> 
+SQL> spool off

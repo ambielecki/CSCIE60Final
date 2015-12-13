@@ -1,0 +1,77 @@
+/* uses css from http://mystrd.at/modern-clean-css-sticky-footer/ to position footer */
+html{
+	position: relative;
+	min-height: 100%;
+}
+body{
+	margin-bottom: 40px; /* bottom = footer height */
+	background-color: #E6F7FF;
+}
+footer{
+  position: absolute;
+  bottom: 0;
+  height: 40px;
+  width: 100%;
+}
+.centered{
+	text-align: center;
+}
+.e60header{
+	background-color: gray;
+}
+
+/* This gradient comes from http://mrmrs.io/gradients/ */
+.bg-blue-gradient {
+  background: rgba(0,116,217,1);
+  background: -webkit-linear-gradient(top, rgba(0,116,217,1) 0%, rgba(0,65,122,1) 100%);
+  background: linear-gradient(to bottom, rgba(0,116,217,1) 0%, rgba(0,65,122,1) 100%);
+  color: white;
+}
+.bg-blue-gradient a{
+	color: white;
+}
+.ps4form{
+	background-color: #00417a;
+  color: white;
+  padding: 5px;
+}
+.ps4form input{
+  color: black;
+  margin-bottom: 2px;
+}
+.ps4form select{
+  color: black;
+}
+.ps4form a{
+  color: white;
+}
+.ps4header{
+  background-color: #00417a;
+  color: white;
+}
+.ps4header a{
+  color: white;
+}
+.ps4right{
+  text-align: right;
+}
+.submitbtn{
+  color: #00417a;
+}
+.formheader{
+  font-size: 20px;
+}
+.textarea{
+    font-size: 20px;
+}
+.warning{
+  color: red;
+}
+.blueheader{
+  background-color: #00417a;
+  color: white;
+  padding-right: 10px;
+}
+.blueheader a{
+  color: white;
+}
